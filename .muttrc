@@ -1,0 +1,212 @@
+ignore *
+unignore  From: To Cc Reply-To Mail-Followup-To Subject User-Agent X-Mailer Date X-Label
+hdr_order Date From: To Cc Reply-To Mail-Followup-To  User-Agent X-Mailer Subject
+set realname="Jean-François Roche"
+set from="jfroche@affinitic.be"
+set use_from=yes
+set beep_new
+alternates "(jfroche|root)@((affinitic.be|jfroche.be|pyxel.be))"
+set query_command="goobook query '%s'"
+bind editor <Tab> complete-query
+macro index,pager A "<pipe-message>goobook add<return>" "add the sender address to Google contacts"
+macro index,pager a "<save-message>=Affinitic/INBOX.Archives.2017/<enter>" "Archive Message"
+macro index,pager S "<save-message>=Affinitic/INBOX.Spam/<enter>" "Archive Message"
+macro index gi "<change-folder>=Affinitic/INBOX/<enter>" "Go to inbox"
+set spoolfile="+Affinitic/INBOX"
+set mbox_type=Maildir
+set folder="/home/jfroche/Mail"
+set mailcap_path = /etc/mailcap
+set ssl_verify_host=no
+set ssl_verify_dates=no
+set locale="fr_FR"
+set date_format="%d-%m-%Y %H:%M:%S %Z"
+set record = "=Affinitic/INBOX.Sent"
+set header_cache="~/.mutt/cache/headers"
+set message_cachedir = "~/.mutt/cache/msgs"
+set move=no
+set confirmappend=no
+set smtp_url = smtp://jfroche@kepler.interne.affinitic.be:4000
+set editor="/usr/bin/vim + -c 'set ft=mail tw=80' -c ':0/^$'"
+set edit_hdrs
+set mail_check=10
+set timeout=15
+set beep_new
+set beep
+set pager_index_lines=8
+set pager_format="%4C %Z %[!%b %e at %I:%M %p] %.20n %s%* -- (%P)"
+auto_view text/x-diff
+auto_view text/x-patch
+auto_view text/html
+alternative_order text/enriched text/plain text/html text
+set allow_ansi
+set sig_on_top=yes
+set signature='~/.mutt/signature'
+bind editor    "\e<delete>"    kill-word
+bind editor    "\e<backspace>" kill-word
+# map delete-char to a sane value
+bind editor     <delete>  delete-char
+set include = yes
+
+# restore the behaviour of mutt versions up to 1.5.7
+set menu_move_off
+
+# don't add the hostname to the From header
+unset use_domain
+
+# Specifies how to sort messages in the index menu.
+set sort=threads
+set sort_browser=reverse-date
+set sort_aux=last-date-received
+# Exim does not remove Bcc headers
+unset write_bcc
+# Postfix and qmail use Delivered-To for detecting loops
+unset bounce_delivered
+
+# Sidebar Navigation ---------------------------------
+bind index,pager ]   sidebar-next
+bind index,pager [   sidebar-prev
+bind index,pager p   sidebar-open
+# weed out binary-only announcements to -devel-changes
+#macro index \CW T!~s\(.*source.*\)\nWn^T~A\n "Weed out binary-only announcements"
+# imitate the old search-body function
+macro index \eb '/~b ' 'search in message bodies'
+
+# simulate the old url menu
+macro index \cl |urlview\n 'call urlview to extract URLs out of a message'
+macro pager \cl |urlview\n 'call urlview to extract URLs out of a message'
+
+# Show documentation when pressing F1
+macro generic <f1> "!zcat /usr/share/doc/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
+macro index   <f1> "!zcat /usr/share/doc/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
+macro pager   <f1> "!zcat /usr/share/doc/mutt/manual.txt.gz | sensible-pager\n" "Show Mutt documentation"
+
+# Use folders which match on \\.gz$ or \\.bz2$ as [gb]zipped folders:
+open-hook	\\.gz$ "gzip -cd %f > %t"
+close-hook	\\.gz$ "gzip -c %t > %f"
+append-hook	\\.gz$ "gzip -c %t >> %f"
+open-hook	\\.bz2$ "bzip2 -cd %f > %t"
+close-hook	\\.bz2$ "bzip2 -c %t > %f"
+append-hook	\\.bz2$ "bzip2 -c %t >> %f"
+
+# If Mutt is unable to determine your site's domain name correctly, you can
+# set the default here.
+#
+# set hostname=cs.hmc.edu
+
+# If your sendmail supports the -B8BITMIME flag, enable the following
+#
+# set use_8bitmime
+
+# colors
+color normal	white black
+color attachment brightyellow black
+color hdrdefault cyan black
+color indicator black cyan
+color markers	brightred black
+color quoted	green black
+color signature cyan black
+color status	brightgreen blue
+color tilde	blue black
+color tree	red black
+color body green default "^diff \-.*"
+color body green default "^index [a-f0-9].*"
+color body green default "^\-\-\- .*"
+color body green default "^[\+]{3} .*"
+color body cyan default "^[\+][^\+]+.*"
+color body red  default "^\-[^\-]+.*"
+color body brightblue default "^@@ .*"
+color sidebar_new yellow default
+#color header	brightgreen black ^From:
+#color header	brightcyan black ^To:
+#color header	brightcyan black ^Reply-To:
+#color header	brightcyan black ^Cc:
+#color header	brightblue black ^Subject:
+#color body	brightred black [\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+
+#color body	brightblue black (https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+
+
+# GnuPG configuration
+set my_hdr="X-PGP-Key: http://keys.gnupg.net/pks/lookup?op=vindex&search=jfroche"
+set pgp_sign_as=69EA19A0
+set pgp_decode_command="gpg  --charset utf-8   --status-fd=2 %?p?--passphrase-fd 0? --no-verbose --quiet  --batch  --output - %f"
+set pgp_verify_command="gpg   --status-fd=2 --no-verbose --quiet  --batch  --output - --verify %s %f"
+set pgp_decrypt_command="gpg   --status-fd=2 %?p?--passphrase-fd 0? --no-verbose --quiet  --batch  --output - %f"
+set pgp_sign_command="gpg    --no-verbose --batch --quiet   --output - %?p?--passphrase-fd 0? --armor --detach-sign --textmode %?a?-u %a? %f"
+set pgp_clearsign_command="gpg   --charset utf-8 --no-verbose --batch --quiet   --output - %?p?--passphrase-fd 0? --armor --textmode --clearsign %?a?-u %a? %f"
+set pgp_encrypt_only_command="/usr/lib/mutt/pgpewrap gpg  --charset utf-8    --batch  --quiet  --no-verbose --output - --encrypt --textmode --armor --always-trust -- -r %r -- %f"
+set pgp_encrypt_sign_command="/usr/lib/mutt/pgpewrap gpg  --charset utf-8 %?p?--passphrase-fd 0?  --batch --quiet  --no-verbose  --textmode --output - --encrypt --sign %?a?-u %a? --armor --always-trust -- -r %r -- %f"
+set pgp_import_command="gpg  --no-verbose --import %f"
+set pgp_export_command="gpg   --no-verbose --export --armor %r"
+set pgp_verify_key_command="gpg   --verbose --batch  --fingerprint --check-sigs %r"
+set pgp_list_pubring_command="gpg   --no-verbose --batch --quiet   --with-colons --list-keys %r" 
+set pgp_list_secring_command="gpg   --no-verbose --batch --quiet   --with-colons --list-secret-keys %r" 
+set pgp_good_sign="^\\[GNUPG:\\] GOODSIG"
+
+# S/MIME configuration
+set smime_ca_location="~/.smime/ca-bundle.crt"
+set smime_certificates="~/.smime/certificates"
+set smime_keys="~/.smime/keys"
+set smime_pk7out_command="openssl smime -verify -in %f -noverify -pk7out"
+set smime_get_cert_command="openssl pkcs7 -print_certs -in %f"
+set smime_get_signer_cert_command="openssl smime -verify -in %f -noverify -signer %c -out /dev/null"
+set smime_get_cert_email_command="openssl x509 -in %f -noout -email"
+set smime_import_cert_command="smime_keys add_cert %f"
+set smime_encrypt_command="openssl smime -encrypt -%a -outform DER -in %f %c"
+set smime_sign_command="openssl smime -sign -signer %c -inkey %k -passin stdin -in %f -certfile %i -outform DER"
+# This alternative command does not include the full certificates chain.
+# Be sure to understand RFC 2315 section 9.1 before using it.
+# set smime_sign_command="openssl smime -sign -signer %c -inkey %k -passin stdin -in %f -outform DER"
+set smime_decrypt_command="openssl smime -decrypt -passin stdin -inform DER -in %f -inkey %k -recip %c"
+set smime_verify_command="openssl smime -verify -inform DER -in %s %C -content %f"
+set smime_verify_opaque_command="openssl smime -verify -inform DER -in %s %C"
+
+set mixmaster="mixmaster-filter"
+
+# See /usr/share/doc/mutt/README.Debian for details.
+source /usr/lib/mutt/source-muttrc.d|
+source ~/.mutt/colors
+
+#bind index \CP sidebar-prev
+#bind index \CN sidebar-next
+#bind index \CO sidebar-open
+#bind pager \CP sidebar-prev
+#bind pager \CN sidebar-next
+#bind pager \CO sidebar-open
+#macro index b 'toggle sidebar_visible'
+#macro pager b 'toggle sidebar_visible'
+
+# bounce-message
+bind index B bounce-message
+set indent_string="> "
+set attribution="On %{%d-%m-%Y %H:%M:%S %Z} %n wrote:"
+set quit=ask-yes
+
+send-hook "~t affinitic.be" 'set signature=sig1'
+#macro index t "<pipe-message>mutt2task<enter> "
+#macro index,pager t "<pipe-message>mutt2task.py<enter>"
+#macro index,pager t "<pipe-message>mess2task<enter>"
+macro index,pager ,ta '<pipe-message>header2task add<enter>F'
+macro index,pager ,td '<pipe-message>header2task done<enter>'
+macro index,pager ,te '<pipe-message>header2task edit<enter>'
+set mime_forward=yes
+set mime_forward_rest=yes
+message-hook '!(~g|~G) ~b"^-----BEGIN\ PGP\ (SIGNED\ )?MESSAGE"' "exec check-traditional-pgp"
+
+source /home/jfroche/.mutt/var/mailboxes
+
+# Sidebar Patch --------------------------------------
+#set sidebar_delim   = '  │'
+set sidebar_visible = yes
+set sidebar_width   = 45
+set sidebar_delim_chars = '.'
+color sidebar_new color221 color233
+
+# Status Bar -----------------------------------------
+set status_chars  = " *%A"
+set status_format = "───[ Folder: %f ]───[%r%m messages%?n? (%n new)?%?d? (%d to delete)?%?t? (%t tagged)? ]───%>─%?p?( %p postponed )?───"
+# Auto purge
+set delete=yes
+macro index <F8> "<shell-escape>mu find --clearlinks --format=links --linksdir=~/Mail/search " "mu find"
+macro index <F9> "<change-folder-readonly>~/Mail/search"  "mu find results"
+
+macro index <space>  '<enter-command>toggle sidebar_visible<enter><refresh>'
+macro pager <space>  '<enter-command>toggle sidebar_visible<enter><redraw-screen>'
